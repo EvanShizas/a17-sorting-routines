@@ -9,11 +9,22 @@ import javax.swing.JRadioButton;
 import javax.swing.JButton;
 import javax.swing.JTextArea;
 import javax.swing.JScrollBar;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import javax.swing.ButtonGroup;
+
+import java.lang.Math;
 
 public class SortingEfficiencies extends JFrame {
 
 	private JPanel contentPane;
+	private final ButtonGroup buttonGroup = new ButtonGroup();
 
+	final int MIN = -10000;
+	final int MAX = 10000;
+	int n = 1;
+	private final ButtonGroup buttonGroup_1 = new ButtonGroup();
+	
 	/**
 	 * Launch the application.
 	 */
@@ -49,35 +60,17 @@ public class SortingEfficiencies extends JFrame {
 		lblNewLabel_1.setBounds(10, 31, 198, 14);
 		contentPane.add(lblNewLabel_1);
 		
-		JRadioButton rdbtnNewRadioButton = new JRadioButton("10");
-		rdbtnNewRadioButton.setBounds(214, 32, 51, 23);
-		contentPane.add(rdbtnNewRadioButton);
-		
-		JRadioButton rdbtnNewRadioButton_1 = new JRadioButton("100");
-		rdbtnNewRadioButton_1.setBounds(267, 32, 46, 23);
-		contentPane.add(rdbtnNewRadioButton_1);
-		
-		JRadioButton rdbtnNewRadioButton_2 = new JRadioButton("1000");
-		rdbtnNewRadioButton_2.setBounds(318, 32, 57, 23);
-		contentPane.add(rdbtnNewRadioButton_2);
-		
-		JRadioButton rdbtnNewRadioButton_3 = new JRadioButton("5000");
-		rdbtnNewRadioButton_3.setBounds(377, 32, 57, 23);
-		contentPane.add(rdbtnNewRadioButton_3);
-		
-		JButton btnNewButton = new JButton("Sort Numbers");
-		btnNewButton.setBounds(20, 56, 125, 23);
-		contentPane.add(btnNewButton);
-		
 		JLabel lblNewLabel_2 = new JLabel("Sort Order");
 		lblNewLabel_2.setBounds(10, 102, 65, 14);
 		contentPane.add(lblNewLabel_2);
 		
 		JRadioButton rdbtnNewRadioButton_4 = new JRadioButton("Ascending");
+		buttonGroup_1.add(rdbtnNewRadioButton_4);
 		rdbtnNewRadioButton_4.setBounds(74, 98, 109, 23);
 		contentPane.add(rdbtnNewRadioButton_4);
 		
 		JRadioButton rdbtnNewRadioButton_5 = new JRadioButton("Descending");
+		buttonGroup_1.add(rdbtnNewRadioButton_5);
 		rdbtnNewRadioButton_5.setBounds(74, 124, 109, 23);
 		contentPane.add(rdbtnNewRadioButton_5);
 		
@@ -89,9 +82,9 @@ public class SortingEfficiencies extends JFrame {
 		lblNewLabel_4.setBounds(103, 154, 80, 14);
 		contentPane.add(lblNewLabel_4);
 		
-		JTextArea textArea = new JTextArea();
-		textArea.setBounds(10, 178, 65, 173);
-		contentPane.add(textArea);
+		JTextArea txtInput = new JTextArea();
+		txtInput.setBounds(10, 178, 65, 173);
+		contentPane.add(txtInput);
 		
 		JTextArea textArea_1 = new JTextArea();
 		textArea_1.setBounds(103, 178, 65, 173);
@@ -104,5 +97,64 @@ public class SortingEfficiencies extends JFrame {
 		JTextArea textArea_2 = new JTextArea();
 		textArea_2.setBounds(213, 108, 430, 243);
 		contentPane.add(textArea_2);
+		
+		JRadioButton rdbtnNewRadioButton = new JRadioButton("10");
+		rdbtnNewRadioButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				n = 10;
+			}
+		});
+		buttonGroup.add(rdbtnNewRadioButton);
+		rdbtnNewRadioButton.setBounds(214, 32, 51, 23);
+		contentPane.add(rdbtnNewRadioButton);
+		
+		JRadioButton rdbtnNewRadioButton_1 = new JRadioButton("100");
+		rdbtnNewRadioButton_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				n = 100;
+			}
+		});
+		buttonGroup.add(rdbtnNewRadioButton_1);
+		rdbtnNewRadioButton_1.setBounds(267, 32, 46, 23);
+		contentPane.add(rdbtnNewRadioButton_1);
+		
+		JRadioButton rdbtnNewRadioButton_2 = new JRadioButton("1000");
+		rdbtnNewRadioButton_2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				n = 1000;
+			}
+		});
+		buttonGroup.add(rdbtnNewRadioButton_2);
+		rdbtnNewRadioButton_2.setBounds(318, 32, 57, 23);
+		contentPane.add(rdbtnNewRadioButton_2);
+		
+		JRadioButton rdbtnNewRadioButton_3 = new JRadioButton("5000");
+		rdbtnNewRadioButton_3.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				n = 5000;
+			}
+		});
+		buttonGroup.add(rdbtnNewRadioButton_3);
+		rdbtnNewRadioButton_3.setBounds(377, 32, 57, 23);
+		contentPane.add(rdbtnNewRadioButton_3);
+		
+		JButton btnNewButton = new JButton("Sort Numbers");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int[] a = new int[n];
+				String output = "";
+				txtInput.setText("");
+				
+				for (int i = 0; i < n; i++) {
+					a[i] = (int)Math.round(Math.random() * (MAX - MIN) + MIN);
+					output += Integer.toString(a[i]);
+					output += "\n";
+				}
+				
+				txtInput.setText(output);
+			}
+		});
+		btnNewButton.setBounds(20, 56, 125, 23);
+		contentPane.add(btnNewButton);
 	}
 }
