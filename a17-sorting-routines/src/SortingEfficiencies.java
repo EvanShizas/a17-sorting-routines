@@ -23,6 +23,8 @@ public class SortingEfficiencies extends JFrame {
 	final int MIN = -10000;
 	final int MAX = 10000;
 	int n = 1;
+	String order;
+	int loopCounter = 0;
 	private final ButtonGroup buttonGroup_1 = new ButtonGroup();
 	
 	/**
@@ -65,11 +67,21 @@ public class SortingEfficiencies extends JFrame {
 		contentPane.add(lblNewLabel_2);
 		
 		JRadioButton rdbtnNewRadioButton_4 = new JRadioButton("Ascending");
+		rdbtnNewRadioButton_4.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				order = "ascending";
+			}
+		});
 		buttonGroup_1.add(rdbtnNewRadioButton_4);
 		rdbtnNewRadioButton_4.setBounds(74, 98, 109, 23);
 		contentPane.add(rdbtnNewRadioButton_4);
 		
 		JRadioButton rdbtnNewRadioButton_5 = new JRadioButton("Descending");
+		rdbtnNewRadioButton_5.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				order = "descending";
+			}
+		});
 		buttonGroup_1.add(rdbtnNewRadioButton_5);
 		rdbtnNewRadioButton_5.setBounds(74, 124, 109, 23);
 		contentPane.add(rdbtnNewRadioButton_5);
@@ -82,21 +94,21 @@ public class SortingEfficiencies extends JFrame {
 		lblNewLabel_4.setBounds(103, 154, 80, 14);
 		contentPane.add(lblNewLabel_4);
 		
-		JTextArea txtInput = new JTextArea();
-		txtInput.setBounds(10, 178, 65, 173);
-		contentPane.add(txtInput);
+		JTextArea txtOrig = new JTextArea();
+		txtOrig.setBounds(10, 178, 65, 173);
+		contentPane.add(txtOrig);
 		
-		JTextArea textArea_1 = new JTextArea();
-		textArea_1.setBounds(103, 178, 65, 173);
-		contentPane.add(textArea_1);
+		JTextArea txtSorted = new JTextArea();
+		txtSorted.setBounds(103, 178, 65, 173);
+		contentPane.add(txtSorted);
 		
 		JLabel lblNewLabel_5 = new JLabel("Sort Results");
 		lblNewLabel_5.setBounds(220, 80, 89, 14);
 		contentPane.add(lblNewLabel_5);
 		
-		JTextArea textArea_2 = new JTextArea();
-		textArea_2.setBounds(213, 108, 430, 243);
-		contentPane.add(textArea_2);
+		JTextArea txtResult = new JTextArea();
+		txtResult.setBounds(213, 108, 430, 243);
+		contentPane.add(txtResult);
 		
 		JRadioButton rdbtnNewRadioButton = new JRadioButton("10");
 		rdbtnNewRadioButton.addActionListener(new ActionListener() {
@@ -143,7 +155,8 @@ public class SortingEfficiencies extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				int[] a = new int[n];
 				String output = "";
-				txtInput.setText("");
+				txtOrig.setText("");
+				loopCounter = 0;
 				
 				for (int i = 0; i < n; i++) {
 					a[i] = (int)Math.round(Math.random() * (MAX - MIN) + MIN);
@@ -151,10 +164,79 @@ public class SortingEfficiencies extends JFrame {
 					output += "\n";
 				}
 				
-				txtInput.setText(output);
+				txtOrig.setText(output);
+				
+				output = "";
+				int[] sortedA = new int[n];
+				sortedA = selectionSort(a, n);
+				/*if (selectionSort(a, n) != bubbleSort(a, n) && bubbleSort(a, n) != next sort)
+					error: sort not equal
+				*/
+				switch (order) {
+				case "ascending":
+					// combine with previous for loop
+					for (int i = 0; i < n; i++) {
+						output += Integer.toString(sortedA[i]);
+						output += "\n";
+					}
+					break;
+				case "descending":
+					for (int i = n-1; i > 0; i--) {
+						output += Integer.toString(sortedA[i]);
+						output += "\n";
+					}
+					break;
+				}
+				txtSorted.setText(output);
+				
+				output = "";
+				output += "SELECTION SORT:";
+				output += "\n";
+				output += "loopCounter = " + loopCounter;
+				output += "\n";
+				//output += "comparisonCounter = " + comparisonCounter;
+				output += "\n";
+				//output += "shiftCounter = " + shiftCounter;
+				output += "\n";
+				txtResult.setText(output);
 			}
 		});
 		btnNewButton.setBounds(20, 56, 125, 23);
 		contentPane.add(btnNewButton);
+	}
+	
+	int[] selectionSort(int[] a, int n) {
+		int temp;
+		
+		for (int i = 0; i < n-1; i++) {
+			for (int j = i+1; j < n; j++) {
+				if (a[i] > a[j]) {
+					temp = a[i];
+					a[i] = a[j];
+					a[j] = temp;
+					
+					loopCounter++;
+				}
+			}
+		}
+		
+		return a;
+	}
+	
+	int[] bubbleSort(int[] a, int n) {
+		boolean swap = true;
+		int temp;
+		while (swap) {
+			swap = false;
+			for (int i = 0; i < n-1; i++) {
+				if (a[i] > a[i+1]) {
+					temp = a[i];
+					a[i] = a[i+1];
+					a[i+1] = temp;
+				}
+			}
+		}
+		
+		return a;
 	}
 }
