@@ -1,35 +1,58 @@
+/**
+ * Program that displays a list of random numbers between -10000 and 10000, both sorted and unsorted.
+ * 
+ * modified     20220610
+ * date         20220606
+ * @filename    SortingEfficiencies.java
+ * @author      Evan Shizas
+ * @author      Alvin Chan
+ * @author      Hammad Hassan
+ * @version     1.0.0
+ * @see         A17 - Sorting Routines
+ */
+
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.EventQueue;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-import javax.swing.JLabel;
-import javax.swing.JRadioButton;
-import javax.swing.JButton;
-import javax.swing.JTextArea;
-import javax.swing.JScrollBar;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
+import java.awt.Font;
 import javax.swing.ButtonGroup;
-
-import java.lang.Math;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
+import javax.swing.JTextArea;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
 
 public class SortingEfficiencies extends JFrame {
 
 	private JPanel contentPane;
-	private final ButtonGroup buttonGroup = new ButtonGroup();
+	private JRadioButton tenNums;
+	private JRadioButton hundredNums;
+	private JRadioButton thousandNums;
+	private JRadioButton fivethousandNums;
+	private JRadioButton ascendingSort;
+	private JRadioButton descendingSort;
+	private JButton sort;
+	private JTextArea originalNumList;
+	private JTextArea sortedNumList;
+	private JTextArea sortResultsList;
+	private JScrollPane originalNumListScroll;
+	private JScrollPane sortedNumListScroll;
+	private JScrollPane sortResultsListScroll;
+	private final ButtonGroup numberAmountGroup = new ButtonGroup();
+	private final ButtonGroup sortOrderGroup = new ButtonGroup();
 
-	final int MIN = -10000;
-	final int MAX = 10000;
-	int n = 1;
-	String order;
-	int loopCounter = 0;
-	private final ButtonGroup buttonGroup_1 = new ButtonGroup();
+	final int MAX = 10000, MIN = -10000;
+	int[] result, modArray;
+	int sortType = 0, arraySize = 0, loops = 0, comparisons = 0, shifts = 0;
+	long start, finish, elapsed;
 	
-	/**
-	 * Launch the application.
-	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -43,200 +66,355 @@ public class SortingEfficiencies extends JFrame {
 		});
 	}
 
-	/**
-	 * Create the frame.
-	 */
 	public SortingEfficiencies() {
+		setTitle("A17 - Sorting Efficiencies");
+		setResizable(false);
+		setBackground(Color.WHITE);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 669, 401);
+		setBounds(100, 100, 1200, 530);
 		contentPane = new JPanel();
+		contentPane.setBackground(Color.WHITE);
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
+
+		JLabel title = new JLabel("Sorting Efficiencies");
+		title.setHorizontalAlignment(SwingConstants.CENTER);
+		title.setForeground(Color.BLUE);
+		title.setFont(new Font("Tahoma", Font.BOLD, 30));
+		title.setBackground(Color.WHITE);
+		title.setBounds(0, 0, 1188, 55);
+		contentPane.add(title);
+
+		JLabel numberAmountLbl = new JLabel("Select the Amount of Numbers in the List:");
+		numberAmountLbl.setFont(new Font("Tahoma", Font.PLAIN, 13));
+		numberAmountLbl.setBackground(Color.WHITE);
+		numberAmountLbl.setBounds(10, 55, 250, 25);
+		contentPane.add(numberAmountLbl);
+
+		JLabel orderTypeLbl = new JLabel("Sort Order:");
+		orderTypeLbl.setFont(new Font("Tahoma", Font.PLAIN, 13));
+		orderTypeLbl.setBackground(Color.WHITE);
+		orderTypeLbl.setBounds(10, 95, 85, 25);
+		contentPane.add(orderTypeLbl);
+
+		JLabel originalNumbersLbl = new JLabel("Original Numbers:");
+		originalNumbersLbl.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		originalNumbersLbl.setBackground(Color.WHITE);
+		originalNumbersLbl.setBounds(10, 160, 110, 25);
+		contentPane.add(originalNumbersLbl);
+
+		JLabel sortedNumbersLbl = new JLabel("Sorted Numbers:");
+		sortedNumbersLbl.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		sortedNumbersLbl.setBackground(Color.WHITE);
+		sortedNumbersLbl.setBounds(275, 160, 110, 25);
+		contentPane.add(sortedNumbersLbl);
 		
-		JLabel lblNewLabel = new JLabel("Sorting Efficiencies");
-		lblNewLabel.setBounds(257, 11, 109, 14);
-		contentPane.add(lblNewLabel);
-		
-		JLabel lblNewLabel_1 = new JLabel("Enter the amount of numbers in the list:");
-		lblNewLabel_1.setBounds(10, 31, 198, 14);
-		contentPane.add(lblNewLabel_1);
-		
-		JLabel lblNewLabel_2 = new JLabel("Sort Order");
-		lblNewLabel_2.setBounds(10, 102, 65, 14);
-		contentPane.add(lblNewLabel_2);
-		
-		JRadioButton rdbtnNewRadioButton_4 = new JRadioButton("Ascending");
-		rdbtnNewRadioButton_4.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				order = "ascending";
+		JLabel resultsLbl = new JLabel("Sort Results:");
+		resultsLbl.setFont(new Font("Tahoma", Font.BOLD, 13));
+		resultsLbl.setBackground(Color.WHITE);
+		resultsLbl.setBounds(485, 55, 100, 25);
+		contentPane.add(resultsLbl);
+
+		tenNums = new JRadioButton("10");
+		numberAmountGroup.add(tenNums);
+		tenNums.setBackground(Color.WHITE);
+		tenNums.setBounds(260, 55, 45, 25);
+		tenNums.setSelected(true);
+		contentPane.add(tenNums);
+
+		hundredNums = new JRadioButton("100");
+		numberAmountGroup.add(hundredNums);
+		hundredNums.setBackground(Color.WHITE);
+		hundredNums.setBounds(305, 55, 50, 25);
+		contentPane.add(hundredNums);
+
+		thousandNums = new JRadioButton("1000");
+		numberAmountGroup.add(thousandNums);
+		thousandNums.setBackground(Color.WHITE);
+		thousandNums.setBounds(355, 55, 60, 25);
+		contentPane.add(thousandNums);
+
+		fivethousandNums = new JRadioButton("5000");
+		numberAmountGroup.add(fivethousandNums);
+		fivethousandNums.setBackground(Color.WHITE);
+		fivethousandNums.setBounds(415, 55, 60, 25);
+		contentPane.add(fivethousandNums);
+
+		ascendingSort = new JRadioButton("Ascending");
+		sortOrderGroup.add(ascendingSort);
+		ascendingSort.setBackground(Color.WHITE);
+		ascendingSort.setBounds(90, 95, 100, 25);
+		ascendingSort.setSelected(true);
+		contentPane.add(ascendingSort);
+
+		descendingSort = new JRadioButton("Descending");
+		sortOrderGroup.add(descendingSort);
+		descendingSort.setBackground(Color.WHITE);
+		descendingSort.setBounds(90, 123, 108, 25);
+		contentPane.add(descendingSort);
+
+		sort = new JButton("Sort Numbers");
+		sort.setBounds(275, 110, 200, 25);
+		contentPane.add(sort);
+		sort.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				sortActionPerformed(evt);
 			}
 		});
-		buttonGroup_1.add(rdbtnNewRadioButton_4);
-		rdbtnNewRadioButton_4.setBounds(74, 98, 109, 23);
-		contentPane.add(rdbtnNewRadioButton_4);
+
+		originalNumListScroll = new JScrollPane();
+		originalNumListScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		originalNumListScroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		originalNumListScroll.setBounds(10, 185, 200, 300);
+		contentPane.add(originalNumListScroll);
+
+		originalNumList = new JTextArea();
+		originalNumList.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		originalNumList.setEditable(false);
+		originalNumListScroll.setViewportView(originalNumList);
+
+		sortedNumListScroll = new JScrollPane();
+		sortedNumListScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		sortedNumListScroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		sortedNumListScroll.setBounds(275, 185, 200, 300);
+		contentPane.add(sortedNumListScroll);
+
+		sortedNumList = new JTextArea();
+		sortedNumList.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		sortedNumList.setEditable(false);
+		sortedNumListScroll.setViewportView(sortedNumList);
 		
-		JRadioButton rdbtnNewRadioButton_5 = new JRadioButton("Descending");
-		rdbtnNewRadioButton_5.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				order = "descending";
-			}
-		});
-		buttonGroup_1.add(rdbtnNewRadioButton_5);
-		rdbtnNewRadioButton_5.setBounds(74, 124, 109, 23);
-		contentPane.add(rdbtnNewRadioButton_5);
+		sortResultsListScroll = new JScrollPane();
+		sortResultsListScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		sortResultsListScroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		sortResultsListScroll.setBounds(485, 80, 693, 405);
+		contentPane.add(sortResultsListScroll);
 		
-		JLabel lblNewLabel_3 = new JLabel("Original Numbers");
-		lblNewLabel_3.setBounds(10, 157, 89, 14);
-		contentPane.add(lblNewLabel_3);
-		
-		JLabel lblNewLabel_4 = new JLabel("Sorted Numbers");
-		lblNewLabel_4.setBounds(103, 154, 80, 14);
-		contentPane.add(lblNewLabel_4);
-		
-		JTextArea txtOrig = new JTextArea();
-		txtOrig.setBounds(10, 178, 65, 173);
-		contentPane.add(txtOrig);
-		
-		JTextArea txtSorted = new JTextArea();
-		txtSorted.setBounds(103, 178, 65, 173);
-		contentPane.add(txtSorted);
-		
-		JLabel lblNewLabel_5 = new JLabel("Sort Results");
-		lblNewLabel_5.setBounds(220, 80, 89, 14);
-		contentPane.add(lblNewLabel_5);
-		
-		JTextArea txtResult = new JTextArea();
-		txtResult.setBounds(213, 108, 430, 243);
-		contentPane.add(txtResult);
-		
-		JRadioButton rdbtnNewRadioButton = new JRadioButton("10");
-		rdbtnNewRadioButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				n = 10;
-			}
-		});
-		buttonGroup.add(rdbtnNewRadioButton);
-		rdbtnNewRadioButton.setBounds(214, 32, 51, 23);
-		contentPane.add(rdbtnNewRadioButton);
-		
-		JRadioButton rdbtnNewRadioButton_1 = new JRadioButton("100");
-		rdbtnNewRadioButton_1.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				n = 100;
-			}
-		});
-		buttonGroup.add(rdbtnNewRadioButton_1);
-		rdbtnNewRadioButton_1.setBounds(267, 32, 46, 23);
-		contentPane.add(rdbtnNewRadioButton_1);
-		
-		JRadioButton rdbtnNewRadioButton_2 = new JRadioButton("1000");
-		rdbtnNewRadioButton_2.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				n = 1000;
-			}
-		});
-		buttonGroup.add(rdbtnNewRadioButton_2);
-		rdbtnNewRadioButton_2.setBounds(318, 32, 57, 23);
-		contentPane.add(rdbtnNewRadioButton_2);
-		
-		JRadioButton rdbtnNewRadioButton_3 = new JRadioButton("5000");
-		rdbtnNewRadioButton_3.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				n = 5000;
-			}
-		});
-		buttonGroup.add(rdbtnNewRadioButton_3);
-		rdbtnNewRadioButton_3.setBounds(377, 32, 57, 23);
-		contentPane.add(rdbtnNewRadioButton_3);
-		
-		JButton btnNewButton = new JButton("Sort Numbers");
-		btnNewButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				int[] a = new int[n];
-				String output = "";
-				txtOrig.setText("");
-				loopCounter = 0;
-				
-				for (int i = 0; i < n; i++) {
-					a[i] = (int)Math.round(Math.random() * (MAX - MIN) + MIN);
-					output += Integer.toString(a[i]);
-					output += "\n";
-				}
-				
-				txtOrig.setText(output);
-				
-				output = "";
-				int[] sortedA = new int[n];
-				sortedA = selectionSort(a, n);
-				/*if (selectionSort(a, n) != bubbleSort(a, n) && bubbleSort(a, n) != next sort)
-					error: sort not equal
-				*/
-				switch (order) {
-				case "ascending":
-					// combine with previous for loop
-					for (int i = 0; i < n; i++) {
-						output += Integer.toString(sortedA[i]);
-						output += "\n";
-					}
-					break;
-				case "descending":
-					for (int i = n-1; i > 0; i--) {
-						output += Integer.toString(sortedA[i]);
-						output += "\n";
-					}
-					break;
-				}
-				txtSorted.setText(output);
-				
-				output = "";
-				output += "SELECTION SORT:";
-				output += "\n";
-				output += "loopCounter = " + loopCounter;
-				output += "\n";
-				//output += "comparisonCounter = " + comparisonCounter;
-				output += "\n";
-				//output += "shiftCounter = " + shiftCounter;
-				output += "\n";
-				txtResult.setText(output);
-			}
-		});
-		btnNewButton.setBounds(20, 56, 125, 23);
-		contentPane.add(btnNewButton);
+		sortResultsList = new JTextArea();
+		sortResultsList.setWrapStyleWord(true);
+		sortResultsList.setLineWrap(true);
+		sortResultsList.setEditable(false);
+		sortResultsList.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		sortResultsListScroll.setViewportView(sortResultsList);
 	}
 	
-	int[] selectionSort(int[] a, int n) {
-		int temp;
+	private void sortActionPerformed(java.awt.event.ActionEvent evt) {
+		originalNumList.setText("");
+		sortedNumList.setText("");
+		sortResultsList.setText("");
 		
-		for (int i = 0; i < n-1; i++) {
-			for (int j = i+1; j < n; j++) {
-				if (a[i] > a[j]) {
-					temp = a[i];
-					a[i] = a[j];
-					a[j] = temp;
-					
-					loopCounter++;
-				}
+		sortType = 0;
+		
+		if (tenNums.isSelected()) {
+			arraySize = 10;
+		}
+		
+		else if (hundredNums.isSelected()) {
+			arraySize = 100;
+		}
+		
+		else if (thousandNums.isSelected()) {
+			arraySize = 1000;
+		}
+		
+		else {
+			arraySize = 5000;
+		}
+		
+		result = new int[arraySize];
+		
+		int begin = 0, end = arraySize - 1;
+		
+		for (int i = 0; i < arraySize; i++) {
+			result[i] = (int) (Math.random() * (MAX - MIN + 1)) + MIN;
+			originalNumList.append(result[i] + "\n");
+		}
+		
+		modArray = result;
+		start = System.currentTimeMillis();
+		selectionSortCalculation();
+		finish = System.currentTimeMillis();
+		sortResultsPrint();
+		
+		loops = 0;
+		comparisons = 0;
+		shifts = 0;
+		
+		modArray = result;
+		start = System.currentTimeMillis();
+		bubbleSortCalculation();
+		finish = System.currentTimeMillis();
+		sortResultsPrint();
+		
+		loops = 0;
+		comparisons = 0;
+		shifts = 0;
+		
+		modArray = result;
+		start = System.currentTimeMillis();
+		insertionSortCalculation();
+		finish = System.currentTimeMillis();
+		sortResultsPrint();
+		
+		loops = 0;
+		comparisons = 0;
+		shifts = 0;
+		
+		modArray = result;		
+		start = System.currentTimeMillis();
+		quickSortCalculation(begin, end);		
+		finish = System.currentTimeMillis();
+		sortResultsPrint();
+		
+		loops = 0;
+		comparisons = 0;
+		shifts = 0;
+		
+		result = modArray;
+		
+		if (descendingSort.isSelected()) {	
+			for (int i = arraySize - 1; i > -1; i--) {
+				sortedNumList.append(result[i] + "\n");
 			}
 		}
 		
-		return a;
+		else {
+			for (int i = 0; i < arraySize; i++) {
+				sortedNumList.append(result[i] + "\n");
+			}
+		}
 	}
 	
-	int[] bubbleSort(int[] a, int n) {
+	public void selectionSortCalculation() {
+		int temp = 0;
+		
+		for (int i = 0; i < arraySize; i++) {
+			for (int j = i+1; j < arraySize; j++) {
+				if (modArray[i] > modArray[j]) {
+					temp = modArray[i];
+					modArray[i] = modArray[j];
+					modArray[j] = temp;
+					
+					comparisons++;
+					shifts++;
+				}
+				
+				loops++;
+			}
+			
+			loops++;
+		}
+	}
+
+	public void bubbleSortCalculation() {
+		int temp = 0;
 		boolean swap = true;
-		int temp;
+		
 		while (swap) {
 			swap = false;
-			for (int i = 0; i < n-1; i++) {
-				if (a[i] > a[i+1]) {
-					temp = a[i];
-					a[i] = a[i+1];
-					a[i+1] = temp;
+			
+			for (int i = 0; i < arraySize - 1; i++) {
+				if (modArray[i] > modArray[i+1]) {
+					swap = true;
+					temp = modArray[i];
+					modArray[i] = modArray[i+1];
+					modArray[i+1] = temp;
+					
+					comparisons++;
+					shifts++;
 				}
+				
+				loops++;
 			}
+			
+			loops++;
+		}
+	}
+
+	public void insertionSortCalculation() {
+		int temp = 0, j = 0;
+		
+		for (int i = 1; i < arraySize; i++) {
+			j = i;
+			
+			while (j > 0 && modArray[j-1] > modArray[j]) {
+				temp = modArray[j];
+				modArray[j] = modArray[j-1];
+				modArray[j-1] = temp;
+				j--;
+				
+				loops++;
+				shifts++;
+			}
+			
+			loops++;
+		}
+	}
+
+	public void quickSortCalculation(int begin, int end) {		
+		if (begin < end) {
+	        int parIndex = partition(begin, end);
+	        quickSortCalculation(begin, parIndex-1);
+	        quickSortCalculation(parIndex+1, end);
+	        
+	        comparisons++;
+	    }
+		
+		loops++;
+	}
+	
+	public int partition(int begin, int end) {
+		int temp = 0, pivot = modArray[end], p = (begin-1);
+
+	    for (int i = begin; i < end; i++) {
+	        if (modArray[i] <= pivot) {
+	            p++;
+
+	            temp = modArray[p];
+	            modArray[p] = modArray[i];
+	            modArray[i] = temp;
+	            
+	            comparisons++;
+	            shifts++;
+	        }
+	        
+	        loops++;
+	    }
+
+	    temp = modArray[p+1];
+	    modArray[p+1] = modArray[end];
+	    modArray[end] = temp;
+	    
+	    shifts++;
+
+	    return p+1;
+	}
+	
+	public void sortResultsPrint() {
+		elapsed = finish - start;
+		
+		if (sortType == 0) {
+			sortResultsList.append("Selection Sort:\n");
 		}
 		
-		return a;
+		else if (sortType == 1) {
+			sortResultsList.append("\n\nBubble Sort:\n");
+		}
+		
+		else if (sortType == 2) {
+			sortResultsList.append("\n\nInsertion Sort:\n");
+		}
+		
+		else {
+			sortResultsList.append("\n\nQuick Sort:\n");
+		}
+		
+		sortResultsList.append("Number of times the loop was executed: " + loops + 
+				"\nNumber of times a comparison was made: " + comparisons + 
+				"\nNumber of times a value was shifted: " + shifts +
+				"\nTime, in milliseconds, to finish sorting: " + elapsed);
+		
+		sortType++;
 	}
 }
