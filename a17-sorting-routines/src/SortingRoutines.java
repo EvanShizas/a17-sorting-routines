@@ -1,10 +1,12 @@
 /**
  * Program that sorts a list of random numbers between -1000 to 1000.
  * 
- * modified     20220607
+ * modified     20220610
  * date         20220606
  * @filename    SortingRoutines.java
- * @author      Evan Shizas, Alvin Chan
+ * @author      Evan Shizas
+ * @author      Alvin Chan
+ * @author      Hammad Hassan
  * @version     1.0.0
  * @see         A17 - Sorting Routines
  */
@@ -22,16 +24,17 @@ import javax.swing.JRadioButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JSpinner;
+import javax.swing.JTextArea;
 import javax.swing.JButton;
 import javax.swing.JTextPane;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.ButtonGroup;
 
 public class SortingRoutines extends JFrame {
 
 	private JPanel contentPane;
-
 	private JRadioButton selectionSort;
 	private JRadioButton bubbleSort;
 	private JRadioButton insertionSort;
@@ -40,10 +43,15 @@ public class SortingRoutines extends JFrame {
 	private JRadioButton descendingSort;
 	private JSpinner numSortAmount;
 	private JButton sort;
-	private JTextPane originalNumList;
-	private JTextPane sortedNumList;
+	private JTextArea originalNumList;
+	private JTextArea sortedNumList;
 	private JScrollPane originalNumListScroll;
 	private JScrollPane sortedNumListScroll;
+	private final ButtonGroup sortTypeGroup = new ButtonGroup();
+	private final ButtonGroup sortOrderGroup = new ButtonGroup();
+	
+	final int MAX = 1000, MIN = -1000;
+	int[] result, modArray;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -96,9 +104,9 @@ public class SortingRoutines extends JFrame {
 		orderTypeLbl.setBounds(250, 95, 85, 25);
 		contentPane.add(orderTypeLbl);
 
-		JLabel amountSortLbl = new JLabel("Amount of Numbers to Sort: (0 - 999,999)");
+		JLabel amountSortLbl = new JLabel("Amount of Numbers to Sort: (0 - 99,999)");
 		amountSortLbl.setFont(new Font("Tahoma", Font.PLAIN, 13));
-		amountSortLbl.setBounds(10, 215, 255, 25);
+		amountSortLbl.setBounds(10, 215, 245, 25);
 		contentPane.add(amountSortLbl);
 
 		JLabel originalNumbersLbl = new JLabel("Original Numbers:");
@@ -114,69 +122,45 @@ public class SortingRoutines extends JFrame {
 		contentPane.add(sortedNumbersLbl);
 
 		selectionSort = new JRadioButton("Selection");
+		sortTypeGroup.add(selectionSort);
 		selectionSort.setBackground(Color.WHITE);
 		selectionSort.setBounds(135, 95, 100, 25);
 		selectionSort.setSelected(true);
 		contentPane.add(selectionSort);
-		selectionSort.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				selectionSortActionPerformed(evt);
-			}
-		});
 
 		bubbleSort = new JRadioButton("Bubble");
+		sortTypeGroup.add(bubbleSort);
 		bubbleSort.setBackground(Color.WHITE);
 		bubbleSort.setBounds(135, 123, 100, 25);
 		contentPane.add(bubbleSort);
-		bubbleSort.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				bubbleSortActionPerformed(evt);
-			}
-		});
 
 		insertionSort = new JRadioButton("Insertion");
+		sortTypeGroup.add(insertionSort);
 		insertionSort.setBackground(Color.WHITE);
 		insertionSort.setBounds(135, 151, 100, 25);
 		contentPane.add(insertionSort);
-		insertionSort.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				insertionSortActionPerformed(evt);
-			}
-		});
 
 		quickSort = new JRadioButton("Quick");
+		sortTypeGroup.add(quickSort);
 		quickSort.setBackground(Color.WHITE);
 		quickSort.setBounds(135, 179, 100, 25);
 		contentPane.add(quickSort);
-		quickSort.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				quickSortActionPerformed(evt);
-			}
-		});
 
 		ascendingSort = new JRadioButton("Ascending");
+		sortOrderGroup.add(ascendingSort);
 		ascendingSort.setBackground(Color.WHITE);
 		ascendingSort.setBounds(340, 95, 100, 25);
 		ascendingSort.setSelected(true);
 		contentPane.add(ascendingSort);
-		ascendingSort.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				ascendingSortActionPerformed(evt);
-			}
-		});
 
 		descendingSort = new JRadioButton("Descending");
+		sortOrderGroup.add(descendingSort);
 		descendingSort.setBackground(Color.WHITE);
-		descendingSort.setBounds(340, 123, 100, 25);
+		descendingSort.setBounds(340, 123, 108, 25);
 		contentPane.add(descendingSort);
-		descendingSort.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				descendingSortActionPerformed(evt);
-			}
-		});
 
 		sort = new JButton("Sort");
-		sort.setBounds(365, 215, 75, 25);
+		sort.setBounds(340, 215, 100, 25);
 		contentPane.add(sort);
 		sort.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -185,10 +169,10 @@ public class SortingRoutines extends JFrame {
 		});
 		
 		numSortAmount = new JSpinner();
-		numSortAmount.setModel(new SpinnerNumberModel(0, 0, 999999, 1));
+		numSortAmount.setModel(new SpinnerNumberModel(0, 0, 99999, 1));
 		numSortAmount.setBackground(Color.WHITE);
 		numSortAmount.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		numSortAmount.setBounds(265, 215, 75, 25);
+		numSortAmount.setBounds(255, 215, 75, 25);
 		contentPane.add(numSortAmount);
 
 		originalNumListScroll = new JScrollPane();
@@ -197,7 +181,7 @@ public class SortingRoutines extends JFrame {
 		originalNumListScroll.setBounds(10, 275, 200, 210);
 		contentPane.add(originalNumListScroll);
 
-		originalNumList = new JTextPane();
+		originalNumList = new JTextArea();
 		originalNumList.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		originalNumList.setEditable(false);
 		originalNumListScroll.setViewportView(originalNumList);
@@ -208,45 +192,133 @@ public class SortingRoutines extends JFrame {
 		sortedNumListScroll.setBounds(240, 275, 200, 210);
 		contentPane.add(sortedNumListScroll);
 
-		sortedNumList = new JTextPane();
+		sortedNumList = new JTextArea();
 		sortedNumList.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		sortedNumList.setEditable(false);
 		sortedNumListScroll.setViewportView(sortedNumList);
 	}
 
-	private void sortActionPerformed(java.awt.event.ActionEvent evt) {
+	private void sortActionPerformed(java.awt.event.ActionEvent evt) {		
+		originalNumList.setText("");
+		sortedNumList.setText("");
 		
+		result = new int[(int) numSortAmount.getValue()];
+		
+		for (int i = 0; i < (int) numSortAmount.getValue(); i++) {
+			result[i] = (int) (Math.random() * (MAX - MIN + 1)) + MIN;
+			originalNumList.append(result[i] + "\n");
+		}
+		
+		modArray = result;
+		
+		if (selectionSort.isSelected()) {
+			result = selectionSortCalculation();
+		}
+		
+		else if (bubbleSort.isSelected()) {
+			result = bubbleSortCalculation();
+		}
+		
+		else if (insertionSort.isSelected()) {
+			result = insertionSortCalculation();
+		}
+		
+		else {
+			int begin = 0, end = (int) numSortAmount.getValue()-1;
+			quickSortCalculation(begin, end);
+		}
+		
+		if (descendingSort.isSelected()) {	
+			for (int i = ((int) numSortAmount.getValue()) - 1; i > -1; i--) {
+				sortedNumList.append(result[i] + "\n");
+			}
+		}
+		
+		else {
+			for (int i = 0; i < (int) numSortAmount.getValue(); i++) {
+				sortedNumList.append(result[i] + "\n");
+			}
+		}
 	}
 	
-	private void selectionSortActionPerformed(java.awt.event.ActionEvent evt) {
-		bubbleSort.setSelected(false);
-		insertionSort.setSelected(false);
-		quickSort.setSelected(false);
+	public int[] selectionSortCalculation() {
+		int temp = 0;
+		
+		for (int i = 0; i < ((int) numSortAmount.getValue()); i++) {
+			for (int j = i+1; j < ((int) numSortAmount.getValue()); j++) {
+				if (modArray[i] > modArray[j]) {
+					temp = modArray[i];
+					modArray[i] = modArray[j];
+					modArray[j] = temp;
+				}
+			}
+		}
+		
+		return modArray;
 	}
 
-	private void bubbleSortActionPerformed(java.awt.event.ActionEvent evt) {
-		selectionSort.setSelected(false);
-		insertionSort.setSelected(false);
-		quickSort.setSelected(false);
+	public int[] bubbleSortCalculation() {
+		int temp = 0;
+		boolean swap = true;
+		
+		while (swap) {
+			swap = false;
+			
+			for (int i = 0; i < ((int) numSortAmount.getValue()) - 1; i++) {
+				if (modArray[i] > modArray[i+1]) {
+					swap = true;
+					temp = modArray[i];
+					modArray[i] = modArray[i+1];
+					modArray[i+1] = temp;
+				}
+			}
+		}
+		
+		return modArray;
+	}
+
+	public int[] insertionSortCalculation() {
+		int temp = 0, j = 0;
+		
+		for (int i = 1; i < ((int) numSortAmount.getValue()); i++) {
+			j = i;
+			
+			while (j > 0 && modArray[j-1] > modArray[j]) {
+				temp = modArray[j];
+				modArray[j] = modArray[j-1];
+				modArray[j-1] = temp;
+				j--;
+			}
+		}
+		
+		return modArray;
+	}
+
+	public void quickSortCalculation(int begin, int end) {
+		if (begin < end) {
+	        int parIndex = partition(begin, end);
+	        quickSortCalculation(begin, parIndex-1);
+	        quickSortCalculation(parIndex+1, end);
+	    }
 	}
 	
-	private void insertionSortActionPerformed(java.awt.event.ActionEvent evt) {
-		selectionSort.setSelected(false);
-		bubbleSort.setSelected(false);
-		quickSort.setSelected(false);
-	}
-	
-	private void quickSortActionPerformed(java.awt.event.ActionEvent evt) {
-		selectionSort.setSelected(false);
-		bubbleSort.setSelected(false);
-		insertionSort.setSelected(false);
-	}
-	
-	private void ascendingSortActionPerformed(java.awt.event.ActionEvent evt) {
-		descendingSort.setSelected(false);
-	}
-	
-	private void descendingSortActionPerformed(java.awt.event.ActionEvent evt) {
-		ascendingSort.setSelected(false);
+	public int partition(int begin, int end) {
+		int temp = 0, pivot = modArray[end], p = (begin-1);
+
+	    for (int i = begin; i < end; i++) {
+	        if (modArray[i] <= pivot) {
+	            p++;
+
+	            temp = modArray[p];
+	            modArray[p] = modArray[i];
+	            modArray[i] = temp;
+	        }
+	    }
+
+	    temp = modArray[p+1];
+	    modArray[p+1] = modArray[end];
+	    modArray[end] = temp;
+
+	    return p+1;
 	}
 }
