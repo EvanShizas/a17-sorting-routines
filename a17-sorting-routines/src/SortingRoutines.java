@@ -1,5 +1,5 @@
 /**
- * Program that sorts a list of random numbers between -1000 to 1000.
+ * Program that sorts a list of random numbers between -1000 to 1000. 
  * 
  * modified     20220610
  * date         20220606
