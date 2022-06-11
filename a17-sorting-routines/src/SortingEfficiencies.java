@@ -364,6 +364,7 @@ public class SortingEfficiencies extends JFrame {
 		
 		comparisons++;
 		loops++;
+		loops++;
 	}
 	
 	public int partition(int begin, int end) {
