@@ -297,10 +297,10 @@ public class SortingEfficiencies extends JFrame {
 					modArray[i] = modArray[j];
 					modArray[j] = temp;
 					
-					comparisons++;
 					shifts++;
 				}
 				
+				comparisons++;
 				loops++;
 			}
 			
@@ -322,10 +322,10 @@ public class SortingEfficiencies extends JFrame {
 					modArray[i] = modArray[i+1];
 					modArray[i+1] = temp;
 					
-					comparisons++;
 					shifts++;
 				}
 				
+				comparisons++;
 				loops++;
 			}
 			
@@ -345,10 +345,12 @@ public class SortingEfficiencies extends JFrame {
 				modArray[j-1] = temp;
 				j--;
 				
+				comparisons++;
 				loops++;
 				shifts++;
 			}
 			
+			comparisons++;
 			loops++;
 		}
 	}
@@ -358,10 +360,9 @@ public class SortingEfficiencies extends JFrame {
 	        int parIndex = partition(begin, end);
 	        quickSortCalculation(begin, parIndex-1);
 	        quickSortCalculation(parIndex+1, end);
-	        
-	        comparisons++;
 	    }
 		
+		comparisons++;
 		loops++;
 	}
 	
@@ -376,10 +377,10 @@ public class SortingEfficiencies extends JFrame {
 	            modArray[p] = modArray[i];
 	            modArray[i] = temp;
 	            
-	            comparisons++;
 	            shifts++;
 	        }
 	        
+	        comparisons++;
 	        loops++;
 	    }
 
