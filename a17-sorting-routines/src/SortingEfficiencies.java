@@ -15,6 +15,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Font;
+import java.util.Arrays;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -231,7 +232,7 @@ public class SortingEfficiencies extends JFrame {
 			originalNumList.append(result[i] + "\n");
 		}
 		
-		modArray = result;
+		modArray = Arrays.copyOf(result, arraySize);
 		start = System.currentTimeMillis();
 		selectionSortCalculation();
 		finish = System.currentTimeMillis();
@@ -241,7 +242,7 @@ public class SortingEfficiencies extends JFrame {
 		comparisons = 0;
 		shifts = 0;
 		
-		modArray = result;
+		modArray = Arrays.copyOf(result, arraySize);
 		start = System.currentTimeMillis();
 		bubbleSortCalculation();
 		finish = System.currentTimeMillis();
@@ -251,7 +252,7 @@ public class SortingEfficiencies extends JFrame {
 		comparisons = 0;
 		shifts = 0;
 		
-		modArray = result;
+		modArray = Arrays.copyOf(result, arraySize);
 		start = System.currentTimeMillis();
 		insertionSortCalculation();
 		finish = System.currentTimeMillis();
@@ -261,7 +262,7 @@ public class SortingEfficiencies extends JFrame {
 		comparisons = 0;
 		shifts = 0;
 		
-		modArray = result;		
+		modArray = Arrays.copyOf(result, arraySize);	
 		start = System.currentTimeMillis();
 		quickSortCalculation(begin, end);		
 		finish = System.currentTimeMillis();
