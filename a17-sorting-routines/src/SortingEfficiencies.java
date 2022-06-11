@@ -350,7 +350,6 @@ public class SortingEfficiencies extends JFrame {
 				shifts++;
 			}
 			
-			comparisons++;
 			loops++;
 		}
 	}
